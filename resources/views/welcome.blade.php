@@ -84,10 +84,15 @@
                     Road List
                 </div>
 
-                <div class="links">
-
-                </div>
+                <form id="getRoadList" enctype="multipart/form-data">
+                    <input name="register" id="register" type="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required>
+                    <button type="submit" class="btn">Получить путевые листы</button>
+                </form>
             </div>
         </div>
     </body>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js" crossorigin="anonymous"></script>
+    <script src="{{ asset('js/main.js') }}" crossorigin="anonymous"></script>
 </html>
