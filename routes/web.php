@@ -15,3 +15,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', 'MainController@index')->name('main');
 Route::post('/get_road_list', 'MainController@getRoadList')->name('getRoadList');
+
+
+Route::get('/prada', function(){
+    return 'by MisterPrada';
+})->name('prada');
