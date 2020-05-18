@@ -18,5 +18,5 @@ Route::post('/get_road_list', 'MainController@getRoadList')->name('getRoadList')
 
 
 Route::get('/prada', function(){
-    return 'by MisterPrada';
+    return 'by MisterPrada '. mt_rand(75, 150);
 })->name('prada');

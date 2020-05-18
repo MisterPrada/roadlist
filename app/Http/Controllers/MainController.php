@@ -123,6 +123,8 @@ class MainController extends Controller
             // Начало расчёта километража
             if(!array_key_exists($item->number, $tax_saving)){
                 $tax_saving[$item->number] = $request->first_mileage;
+            }else{
+                $tax_saving[$item->number] += (int)mt_rand(75, 150); // Добавляем рандомное значение для начального километража ( Машина может ездить на тех обслуживание )
             }
             $activeSheet2->setCellValue('BP42', $tax_saving[$item->number]); // Выставляем начальный километраж
             $tax_saving[$item->number] += $taxation[(int)$item->road_count]->total;
