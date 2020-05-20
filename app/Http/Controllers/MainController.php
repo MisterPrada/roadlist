@@ -108,7 +108,7 @@ class MainController extends Controller
             $activeSheet1->setCellValue('FH46', $date->format('yy')); // Выставляем год
 
             if($request->price_type == 'cr'){
-                $activeSheet1->setCellValue('FW54', $item->road_count * $request->price); // Формируем "Всего к оплате" через количество
+                $activeSheet1->setCellValue('FW54', $item->success * $request->price); // Формируем "Всего к оплате" через количество
             }
 
             if($request->price_type == 'cube'){
