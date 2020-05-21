@@ -36,43 +36,61 @@ class MainController extends Controller
 
         $taxation = []; // Таблица содержащая таксировку
         $register = []; // Таблица содержащая Регист
+        $address = collect(); // Коллекция содержащая Адреса
 
-        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->register); // Общий объект
-        $activeSheet = $spreadsheet->getActiveSheet(); // Получаем вкладку
+        $spreadsheet_register = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->register); // Общий объект
+        $activeSheet_register = $spreadsheet_register->getActiveSheet(); // Получаем вкладку
 
-        // Заполним массив таксировок (правая таблица)
-        for ($i = 2; $i < 10000; ++$i) {
+        // Заполним массив адресов
+        for ($i = 11; $i < 10000; ++$i) {
 
-            if (!$activeSheet->getCell('J' . $i)->getCalculatedValue()) {
+            if (!$activeSheet_register->getCell('M' . $i)->getCalculatedValue()) {
                 break;
             }
 
-            $taxation[$activeSheet->getCell('J' . $i)->getCalculatedValue()] = (object)[
-                'pp' => $activeSheet->getCell('J' . $i)->getCalculatedValue(),
-                'prb' => $activeSheet->getCell('K' . $i)->getFormattedValue(),
-                'ub' => $activeSheet->getCell('L' . $i)->getFormattedValue(),
-                'total' => $activeSheet->getCell('M' . $i)->getCalculatedValue(),
-                'gruz' => $activeSheet->getCell('N' . $i)->getCalculatedValue(),
+            $address->push($activeSheet_register->getCell('M' . $i)->getCalculatedValue());
+        }
+
+
+
+        // Заполним массив таксировок (правая таблица)
+        for ($i = 11; $i < 10000; ++$i) {
+
+            if (!$activeSheet_register->getCell('R' . $i)->getCalculatedValue()) {
+                break;
+            }
+
+            $taxation[$activeSheet_register->getCell('R' . $i)->getCalculatedValue()] = (object)[
+                'pp' => $activeSheet_register->getCell('R' . $i)->getCalculatedValue(),
+                'prb' => $activeSheet_register->getCell('S' . $i)->getFormattedValue(),
+                'ub' => $activeSheet_register->getCell('T' . $i)->getFormattedValue(),
+                'total' => $activeSheet_register->getCell('U' . $i)->getCalculatedValue(),
+                'gruz' => $activeSheet_register->getCell('V' . $i)->getCalculatedValue(),
             ];
         }
 
         // Заполним массив регистра
-        for ($i = 2; $i < 10000; ++$i) {
+        for ($i = 11; $i < 10000; ++$i) {
 
-            if (!$activeSheet->getCell('A' . $i)->getCalculatedValue()) {
+            if (!$activeSheet_register->getCell('A' . $i)->getCalculatedValue()) {
                 break;
             }
 
             $register[] = (object)[
-                'date' => Carbon::create($activeSheet->getCell('A' . $i)->getFormattedValue())->format('d.m.yy'),
-                'n1' => $activeSheet->getCell('B' . $i)->getCalculatedValue(),
-                'n2' => $activeSheet->getCell('C' . $i)->getCalculatedValue(),
-                'car_mark' => $activeSheet->getCell('D' . $i)->getFormattedValue(),
-                'number' => $activeSheet->getCell('E' . $i)->getFormattedValue(),
-                'road_count' => $activeSheet->getCell('F' . $i)->getCalculatedValue(),
-                'volume' => $activeSheet->getCell('G' . $i)->getCalculatedValue(),
-                'success' => $activeSheet->getCell('H' . $i)->getCalculatedValue(),
+                'date' => Carbon::create($activeSheet_register->getCell('A' . $i)->getFormattedValue())->format('d.m.yy'),
+                'n1' => $activeSheet_register->getCell('B' . $i)->getCalculatedValue(),
+                'n2' => $activeSheet_register->getCell('C' . $i)->getCalculatedValue(),
+                'car_mark' => $activeSheet_register->getCell('D' . $i)->getFormattedValue(),
+                'number' => $activeSheet_register->getCell('E' . $i)->getFormattedValue(),
+                'road_count' => $activeSheet_register->getCell('F' . $i)->getCalculatedValue(),
+                'volume' => $activeSheet_register->getCell('G' . $i)->getCalculatedValue(),
+                'success' => $activeSheet_register->getCell('H' . $i)->getCalculatedValue(),
             ];
+
+            $address_tmp = clone $address;
+            $address = $address_tmp->splice((int)$activeSheet_register->getCell('H' . $i)->getCalculatedValue()); // Обрезаем
+
+            $activeSheet_register->setCellValue('I' . $i, implode(', ', $address_tmp->all())); // Выставляем адрес
         }
 
 
@@ -144,6 +162,18 @@ class MainController extends Controller
             $writer->save($temp_dir . "/{$file_name}.xlsx"); // Сохраняем документ в определённую директорию
             $zip->addFile($temp_dir . "/{$file_name}.xlsx", "{$file_name}.xlsx"); // Добавляем этот же файл в директорию
         }
+
+        $activeSheet_register->setCellValue('B6', $request->first_customer); // Выставляем первого заказчика
+        $activeSheet_register->setCellValue('B7', $request->organization); // Выставляем организацию
+
+        // Заполним реестр данными
+
+
+        // Сохранение регистра
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet_register); // Создаём новый .xlsx документ но основе копии
+        $file_name = 'Register'; // Формируем имя документа
+        $writer->save($temp_dir . "/{$file_name}.xlsx"); // Сохраняем документ в определённую директорию
+        $zip->addFile($temp_dir . "/{$file_name}.xlsx", "{$file_name}.xlsx"); // Добавляем этот же файл в директорию
 
 
         $zip->close(); // Закрываем работу с архивом
