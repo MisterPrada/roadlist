@@ -19,7 +19,8 @@ $('#getRoadList').on('submit', function(e){
 
     formData.append('organization', this.organization.value);
     formData.append('first_customer', this.first_customer.value);
-    formData.append('first_mileage', this.first_mileage.value);
+    formData.append('second_customer', this.second_customer.value);
+    /*formData.append('first_mileage', this.first_mileage.value);*/
     formData.append('price_type', this.price_type.value);
     formData.append('price', this.price.value);
     formData.append('tax_user', this.tax_user.value);

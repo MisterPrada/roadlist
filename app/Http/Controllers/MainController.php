@@ -37,6 +37,7 @@ class MainController extends Controller
         $taxation = []; // Таблица содержащая таксировку
         $register = []; // Таблица содержащая Регист
         $address = collect(); // Коллекция содержащая Адреса
+        $customer_offset = 0;
 
         $spreadsheet_register = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->register); // Общий объект
         $activeSheet_register = $spreadsheet_register->getActiveSheet(); // Получаем вкладку
@@ -50,8 +51,6 @@ class MainController extends Controller
 
             $address->push($activeSheet_register->getCell('M' . $i)->getCalculatedValue());
         }
-
-
 
         // Заполним массив таксировок (правая таблица)
         for ($i = 11; $i < 10000; ++$i) {
@@ -76,6 +75,9 @@ class MainController extends Controller
                 break;
             }
 
+            $success = (int)$activeSheet_register->getCell('H' . $i)->getCalculatedValue();
+            $first_tax = (int)$activeSheet_register->getCell('K' . $i)->getCalculatedValue();
+
             $register[] = (object)[
                 'date' => Carbon::create($activeSheet_register->getCell('A' . $i)->getFormattedValue())->format('d.m.yy'),
                 'n1' => $activeSheet_register->getCell('B' . $i)->getCalculatedValue(),
@@ -84,21 +86,33 @@ class MainController extends Controller
                 'number' => $activeSheet_register->getCell('E' . $i)->getFormattedValue(),
                 'road_count' => $activeSheet_register->getCell('F' . $i)->getCalculatedValue(),
                 'volume' => $activeSheet_register->getCell('G' . $i)->getCalculatedValue(),
-                'success' => $activeSheet_register->getCell('H' . $i)->getCalculatedValue(),
+                'success' => $success,
+                'first_tax' => $first_tax,
             ];
 
             $address_tmp = clone $address;
-            $address = $address_tmp->splice((int)$activeSheet_register->getCell('H' . $i)->getCalculatedValue()); // Обрезаем
+            $address = $address_tmp->splice($success); // Обрезаем
 
-            $activeSheet_register->setCellValue('I' . $i, implode(', ', $address_tmp->all())); // Выставляем адрес
+            $activeSheet_register->setCellValue('I' . $i, implode(",\r\n", $address_tmp->all())); // Выставляем адрес
         }
 
+        // Выравнивание строк по высоте относительно контента (для адресов)
+        foreach ($activeSheet_register->getRowDimensions() as $rd) {
+            $rd->setRowHeight(-1);
+        }
 
         $temp_dir = public_path('temp/' . Str::uuid());
         File::makeDirectory($temp_dir, $mode = 0755, true, true); // Формируем уникальную директорию
 
         $zip_path = $temp_dir . '/roadlist.zip'; // Путь где будет храниться скачиваемый .zip архив
-        $template = storage_path('app/template/out_template.xlsx'); // получаем общий шаблон
+
+        if ($request->second_customer) { // Проверка на второго заказчика
+            $template = storage_path('app/template/out_template_2.xlsx'); // получаем общий шаблон с двумя заказчиками
+            $customer_offset = 2; // Выставляем смещение для корешка с двумя заказчиками
+        } else {
+            $template = storage_path('app/template/out_template.xlsx'); // получаем общий шаблон c одним заказчиком
+        }
+
 
         $zip = new ZipArchive();
         $zip->open($zip_path, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE);
@@ -125,37 +139,40 @@ class MainController extends Controller
             $activeSheet1->setCellValue('EM46', $month_rus[$date->month - 1]); // Выставляем месяц
             $activeSheet1->setCellValue('FH46', $date->format('yy')); // Выставляем год
 
-            if($request->price_type == 'cr'){
+            if ($request->price_type == 'cr') {
                 $activeSheet1->setCellValue('FW54', $item->success * $request->price); // Формируем "Всего к оплате" через количество
             }
 
-            if($request->price_type == 'cube'){
+            if ($request->price_type == 'cube') {
                 $activeSheet1->setCellValue('FW54', $item->volume * $request->price); // Формируем "Всего к оплате" через кубы
             }
 
 
             // выставляем значения на втором листе
             $activeSheet2->setCellValue('P36', $request->organization); // Выставляем организацию
+            $activeSheet2->setCellValue('T' . (38), $item->car_mark); // Выставляем марку автомобиля
             $activeSheet2->setCellValue('V40', $request->first_customer); // Выставляем первичного заказчика
+            if ($request->second_customer) { // Выставляем второго заказчика если он есть
+                $activeSheet2->setCellValue('V42', $request->second_customer); // Выставляем первичного заказчика
+            }
 
             // Начало расчёта километража
-            if(!array_key_exists($item->number, $tax_saving)){
-                $tax_saving[$item->number] = $request->first_mileage;
-            }else{
+            if (!array_key_exists($item->number, $tax_saving)) {
+                $tax_saving[$item->number] = $item->first_tax; // Выставляем самый первый километраж для машины
+            } else {
                 $tax_saving[$item->number] += (int)mt_rand(75, 150); // Добавляем рандомное значение для начального километража ( Машина может ездить на тех обслуживание )
             }
-            $activeSheet2->setCellValue('BP42', $tax_saving[$item->number]); // Выставляем начальный километраж
+            $activeSheet2->setCellValue('BP' . (42 + $customer_offset), $tax_saving[$item->number]); // Выставляем начальный километраж
             $tax_saving[$item->number] += $taxation[(int)$item->road_count]->total;
-            $activeSheet2->setCellValue('BP44', $tax_saving[$item->number]); // Выставляем конечный километраж
+            $activeSheet2->setCellValue('BP' . (44 + $customer_offset), $tax_saving[$item->number]); // Выставляем конечный километраж
             // Конец расчёта километрожа
 
-            $activeSheet2->setCellValue('T38', $item->car_mark); // Выставляем марку автомобиля
-            $activeSheet2->setCellValue('BU38', $item->number); // Выставляем государственный номерной знак
-            $activeSheet2->setCellValue('W42', $item->date . ','); // Выставляем дату
-            $activeSheet2->setCellValue('W44', $item->date . ','); // Выставляем дату
-            $activeSheet2->setCellValue('AH42', $taxation[(int)$item->road_count]->prb); // Выставляем время отбытия
-            $activeSheet2->setCellValue('AH44', $taxation[(int)$item->road_count]->ub); // Выставляем время убытия
-            $activeSheet2->setCellValue('Y48', $item->road_count); // Выставляем количество поездок
+            $activeSheet2->setCellValue('BU' . (38 + $customer_offset), $item->number); // Выставляем государственный номерной знак
+            $activeSheet2->setCellValue('W' . (42 + $customer_offset), $item->date . ','); // Выставляем дату
+            $activeSheet2->setCellValue('W' . (44 + $customer_offset), $item->date . ','); // Выставляем дату
+            $activeSheet2->setCellValue('AH' . (42  + $customer_offset), $taxation[(int)$item->road_count]->prb); // Выставляем время отбытия
+            $activeSheet2->setCellValue('AH' . (44  + $customer_offset), $taxation[(int)$item->road_count]->ub); // Выставляем время убытия
+            $activeSheet2->setCellValue('Y' . (48 + $customer_offset), $item->road_count); // Выставляем количество поездок
 
             $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet); // Создаём новый .xlsx документ но основе копии
             $file_name = $item->n1 . ' ' . $item->n2; // Формируем имя документа
@@ -163,10 +180,9 @@ class MainController extends Controller
             $zip->addFile($temp_dir . "/{$file_name}.xlsx", "{$file_name}.xlsx"); // Добавляем этот же файл в директорию
         }
 
+        // Заполним реестр данными
         $activeSheet_register->setCellValue('B6', $request->first_customer); // Выставляем первого заказчика
         $activeSheet_register->setCellValue('B7', $request->organization); // Выставляем организацию
-
-        // Заполним реестр данными
 
 
         // Сохранение регистра

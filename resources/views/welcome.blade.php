@@ -98,38 +98,42 @@
 
                 <form id="getRoadList" enctype="multipart/form-data">
                     <div>
-                        <span>Организация: </span>
+                        <span>*Организация: </span>
                         <input name="organization" id="organization" type="text" placeholder="ООО ТестСтрой" required>
                     </div>
                     <div>
-                        <span>Первый заказчик: </span>
+                        <span>*Первый заказчик: </span>
                         <input name="first_customer" id="first_customer" type="text" placeholder="Бисков А.А." required>
                     </div>
                     <div>
+                        <span>Второй заказчик: </span>
+                        <input name="second_customer" id="second_customer" type="text" placeholder="Поксёв А.А.">
+                    </div>
+                    {{--<div>
                         <span>Начальный километраж: </span>
                         <input name="first_mileage" id="first_mileage" type="text" placeholder="174000" required>
-                    </div>
+                    </div>--}}
                     <div>
-                        <span>Расчёт цены: </span>
+                        <span>*Расчёт цены: </span>
                         <select style="width: 173px;" name="price_type" id="price_type">
                             <option value="cr">За бункер</option>
                             <option value="cube">За м3</option>
                         </select>
                     </div>
                     <div>
-                        <span>Цена: </span>
+                        <span>*Цена: </span>
                         <input name="price" id="price" type="text" placeholder="600000" required>
                     </div>
                     <div>
-                        <span>Таксировщик: </span>
+                        <span>*Таксировщик: </span>
                         <input name="tax_user" id="tax_user" type="text" placeholder="Бисков А.А." required>
                     </div>
                     <div>
-                        <span>Начальник эксплуатации: </span>
+                        <span>*Начальник эксплуатации: </span>
                         <input name="exp_user" id="exp_user" type="text" placeholder="Бисков А.А." required>
                     </div>
                     <div>
-                        <span>Загрузите реестр: </span>
+                        <span>*Загрузите реестр: </span>
                         <input name="register" id="register" type="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required>
                     </div>
                     <div style="width: 100%;">
