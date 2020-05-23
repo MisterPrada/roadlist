@@ -103,11 +103,11 @@
                     </div>
                     <div>
                         <span>*Первый заказчик: </span>
-                        <input name="first_customer" id="first_customer" type="text" placeholder="Бисков А.А." required>
+                        <input name="first_customer" id="first_customer" type="text" required>
                     </div>
                     <div>
                         <span>Второй заказчик: </span>
-                        <input name="second_customer" id="second_customer" type="text" placeholder="Поксёв А.А.">
+                        <input name="second_customer" id="second_customer" type="text">
                     </div>
                     {{--<div>
                         <span>Начальный километраж: </span>
@@ -122,15 +122,15 @@
                     </div>
                     <div>
                         <span>*Цена: </span>
-                        <input name="price" id="price" type="text" placeholder="600000" required>
+                        <input name="price" id="price" type="text" required>
                     </div>
                     <div>
                         <span>*Таксировщик: </span>
-                        <input name="tax_user" id="tax_user" type="text" placeholder="Бисков А.А." required>
+                        <input name="tax_user" id="tax_user" type="text" placeholder="Куракина В.Н." required>
                     </div>
                     <div>
                         <span>*Начальник эксплуатации: </span>
-                        <input name="exp_user" id="exp_user" type="text" placeholder="Бисков А.А." required>
+                        <input name="exp_user" id="exp_user" type="text" placeholder="Орленко Д.А." required>
                     </div>
                     <div>
                         <span>*Загрузите реестр: </span>
