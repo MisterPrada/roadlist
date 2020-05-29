@@ -66,6 +66,14 @@
                 width: 400px;
             }
 
+            #getRoadList .default_input{
+                width: 169px;
+            }
+
+            #getRoadList select{
+                width: 177px;
+            }
+
             #getRoadList div{
                 float: right;
             }
@@ -99,38 +107,38 @@
                 <form id="getRoadList" enctype="multipart/form-data">
                     <div>
                         <span>*Организация: </span>
-                        <input name="organization" id="organization" type="text" placeholder="ООО ТестСтрой" required>
+                        <input class="default_input" name="organization" id="organization" type="text" placeholder="ООО ТестСтрой" required>
                     </div>
                     <div>
                         <span>*Первый заказчик: </span>
-                        <input name="first_customer" id="first_customer" type="text" required>
+                        <input class="default_input" name="first_customer" id="first_customer" type="text" required>
                     </div>
                     <div>
                         <span>Второй заказчик: </span>
-                        <input name="second_customer" id="second_customer" type="text">
+                        <input class="default_input" name="second_customer" id="second_customer" type="text">
                     </div>
                     {{--<div>
                         <span>Начальный километраж: </span>
-                        <input name="first_mileage" id="first_mileage" type="text" placeholder="174000" required>
+                        <input class=default_input" name="first_mileage" id="first_mileage" type="text" placeholder="174000" required>
                     </div>--}}
                     <div>
                         <span>*Расчёт цены: </span>
-                        <select style="width: 177px;" name="price_type" id="price_type">
+                        <select name="price_type" id="price_type">
                             <option value="cr">За бункер</option>
                             <option value="cube">За м3</option>
                         </select>
                     </div>
                     <div>
                         <span>*Цена: </span>
-                        <input name="price" id="price" type="text" required>
+                        <input class="default_input" name="price" id="price" type="text" required>
                     </div>
                     <div>
                         <span>*Таксировщик: </span>
-                        <input name="tax_user" id="tax_user" type="text" placeholder="Куракина В.Н." required>
+                        <input class="default_input" name="tax_user" id="tax_user" type="text" placeholder="Куракина В.Н." required>
                     </div>
                     <div>
                         <span>*Начальник эксплуатации: </span>
-                        <input name="exp_user" id="exp_user" type="text" placeholder="Орленко Д.А." required>
+                        <input class="default_input" name="exp_user" id="exp_user" type="text" placeholder="Орленко Д.А." required>
                     </div>
                     <div>
                         <span>*Загрузите реестр: </span>
