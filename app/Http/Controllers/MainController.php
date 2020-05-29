@@ -174,6 +174,7 @@ class MainController extends Controller
             $activeSheet2->setCellValue('AH' . (44  + $customer_offset), $taxation[(int)$item->road_count]->ub); // Выставляем время убытия
             $activeSheet2->setCellValue('Y' . (48 + $customer_offset), $item->road_count); // Выставляем количество поездок
 
+
             $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet); // Создаём новый .xlsx документ но основе копии
             $file_name = $item->n1 . ' ' . $item->n2; // Формируем имя документа
             $writer->save($temp_dir . "/{$file_name}.xlsx"); // Сохраняем документ в определённую директорию

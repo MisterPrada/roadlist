@@ -115,7 +115,7 @@
                     </div>--}}
                     <div>
                         <span>*Расчёт цены: </span>
-                        <select style="width: 173px;" name="price_type" id="price_type">
+                        <select style="width: 177px;" name="price_type" id="price_type">
                             <option value="cr">За бункер</option>
                             <option value="cube">За м3</option>
                         </select>
