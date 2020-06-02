@@ -107,7 +107,6 @@ class MainController extends Controller
             $activeSheet_register->setCellValue('I' . $i, implode(",\r\n", $address_tmp->all())); // Выставляем адрес
         }
 
-        dd($register);
 
         // Выравнивание строк по высоте относительно контента (для адресов)
         foreach ($activeSheet_register->getRowDimensions() as $rd) {
@@ -148,7 +147,7 @@ class MainController extends Controller
 
 
             // выставляем значения на первом листе
-            $activeSheet1->setCellValue('DQ53', $price); // Выставляем цену
+            $activeSheet1->setCellValue('DQ53', "DETROI234324234"); // Выставляем цену
             $activeSheet1->setCellValue('DP55', $request->tax_user); // Выставляем таксировщика
             $activeSheet1->setCellValue('FG55', $request->exp_user); // Выставляем начальника эксплуатации
             $activeSheet1->setCellValue('DP46', $item->n1 . ' ' . $item->n2); // Выставляем номер путевого листа
