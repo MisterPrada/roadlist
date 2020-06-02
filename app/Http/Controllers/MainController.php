@@ -16,7 +16,6 @@ class MainController extends Controller
         return view('welcome');
     }
 
-
     public function getRoadList(Request $request)
     {
         $month_rus = [
@@ -34,6 +33,7 @@ class MainController extends Controller
             'Декабря'
         ];
 
+        $taxation_collect = collect();
         $taxation = []; // Таблица содержащая таксировку
         $register = []; // Таблица содержащая Регист
         $address = collect(); // Коллекция содержащая Адреса
@@ -52,21 +52,28 @@ class MainController extends Controller
             $address->push($activeSheet_register->getCell('M' . $i)->getCalculatedValue());
         }
 
-        // Заполним массив таксировок (правая таблица)
-        for ($i = 11; $i < 10000; ++$i) {
+        // Заполним массив таксировок (правые  таблицы)
+        for($table = 1; $table < 31; ++$table){
 
-            if (!$activeSheet_register->getCell('R' . $i)->getCalculatedValue()) {
-                break;
+            $taxation = [];
+            for ($i = (11 * $table) + (2 * ($table - 1)); $i < 10000; ++$i) {
+                if (!$activeSheet_register->getCell('R' . $i)->getCalculatedValue()) {
+                    break;
+                }
+
+                $taxation[$activeSheet_register->getCell('R' . $i)->getCalculatedValue()] = (object)[
+                    'pp' => $activeSheet_register->getCell('R' . $i)->getCalculatedValue(),
+                    'prb' => $activeSheet_register->getCell('S' . $i)->getFormattedValue(),
+                    'ub' => $activeSheet_register->getCell('T' . $i)->getFormattedValue(),
+                    'total' => $activeSheet_register->getCell('U' . $i)->getCalculatedValue(),
+                    'gruz' => $activeSheet_register->getCell('V' . $i)->getCalculatedValue(),
+                ];
+
             }
 
-            $taxation[$activeSheet_register->getCell('R' . $i)->getCalculatedValue()] = (object)[
-                'pp' => $activeSheet_register->getCell('R' . $i)->getCalculatedValue(),
-                'prb' => $activeSheet_register->getCell('S' . $i)->getFormattedValue(),
-                'ub' => $activeSheet_register->getCell('T' . $i)->getFormattedValue(),
-                'total' => $activeSheet_register->getCell('U' . $i)->getCalculatedValue(),
-                'gruz' => $activeSheet_register->getCell('V' . $i)->getCalculatedValue(),
-            ];
+            $taxation_collect->put($table, $taxation); // Заносим n таблицу из правыз
         }
+
 
         // Заполним массив регистра
         for ($i = 11; $i < 10000; ++$i) {
@@ -77,6 +84,8 @@ class MainController extends Controller
 
             $success = (int)$activeSheet_register->getCell('H' . $i)->getCalculatedValue();
             $first_tax = (int)$activeSheet_register->getCell('K' . $i)->getCalculatedValue();
+            $tax_table = (int)$activeSheet_register->getCell('L' . $i)->getCalculatedValue();
+            $price = (float)$activeSheet_register->getCell('N' . $i)->getCalculatedValue();
 
             $register[] = (object)[
                 'date' => Carbon::create($activeSheet_register->getCell('A' . $i)->getFormattedValue())->format('d.m.yy'),
@@ -88,13 +97,17 @@ class MainController extends Controller
                 'volume' => $activeSheet_register->getCell('G' . $i)->getCalculatedValue(),
                 'success' => $success,
                 'first_tax' => $first_tax,
+                'tax_table' => $tax_table,
+                'price' => $price,
             ];
+
 
             $address_tmp = clone $address;
             $address = $address_tmp->splice($success); // Обрезаем
 
             $activeSheet_register->setCellValue('I' . $i, implode(",\r\n", $address_tmp->all())); // Выставляем адрес
         }
+
 
         // Выравнивание строк по высоте относительно контента (для адресов)
         foreach ($activeSheet_register->getRowDimensions() as $rd) {
@@ -121,9 +134,11 @@ class MainController extends Controller
         $activeSheet1 = $spreadsheet->getSheetByName('стр1'); // Получаем вкладку
         $activeSheet2 = $spreadsheet->getSheetByName('стр2'); // Получаем вкладку
 
-        $tax_saving = [];
+        $tax_saving = []; // Хранение километража для машины
 
         foreach ($register as $key => $item) {
+            $taxation = $taxation_collect->get( $item->tax_table ); // Получаем нужную правую таблицу изходя из заданного значения
+
             // выставляем значения на первом листе
             $activeSheet1->setCellValue('DQ53', $request->price); // Выставляем цену
             $activeSheet1->setCellValue('DP55', $request->tax_user); // Выставляем таксировщика
@@ -170,8 +185,8 @@ class MainController extends Controller
             $activeSheet2->setCellValue('BU' . (38 + $customer_offset), $item->number); // Выставляем государственный номерной знак
             $activeSheet2->setCellValue('W' . (42 + $customer_offset), $item->date . ','); // Выставляем дату
             $activeSheet2->setCellValue('W' . (44 + $customer_offset), $item->date . ','); // Выставляем дату
-            $activeSheet2->setCellValue('AH' . (42  + $customer_offset), $taxation[(int)$item->road_count]->prb); // Выставляем время отбытия
-            $activeSheet2->setCellValue('AH' . (44  + $customer_offset), $taxation[(int)$item->road_count]->ub); // Выставляем время убытия
+            $activeSheet2->setCellValue('AH' . (42 + $customer_offset), $taxation[(int)$item->road_count]->prb); // Выставляем время отбытия
+            $activeSheet2->setCellValue('AH' . (44 + $customer_offset), $taxation[(int)$item->road_count]->ub); // Выставляем время убытия
             $activeSheet2->setCellValue('Y' . (48 + $customer_offset), $item->road_count); // Выставляем количество поездок
 
 
