@@ -146,6 +146,7 @@ class MainController extends Controller
             }
 
 
+            dd($price);
             // выставляем значения на первом листе
             $activeSheet1->setCellValue('DQ53', $price."SFSDFSDF34324"); // Выставляем цену
             $activeSheet1->setCellValue('DP55', $request->tax_user); // Выставляем таксировщика
