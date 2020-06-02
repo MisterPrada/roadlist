@@ -147,7 +147,7 @@ class MainController extends Controller
 
 
             // выставляем значения на первом листе
-            $activeSheet1->setCellValue('DQ53', "DETROI234324234"); // Выставляем цену
+            $activeSheet1->setCellValue('DQ53', (string)$price); // Выставляем цену
             $activeSheet1->setCellValue('DP55', $request->tax_user); // Выставляем таксировщика
             $activeSheet1->setCellValue('FG55', $request->exp_user); // Выставляем начальника эксплуатации
             $activeSheet1->setCellValue('DP46', $item->n1 . ' ' . $item->n2); // Выставляем номер путевого листа
