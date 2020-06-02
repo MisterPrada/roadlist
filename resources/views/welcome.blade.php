@@ -67,7 +67,8 @@
             }
 
             #getRoadList .default_input{
-                width: 169px;
+                width: 173px;
+                padding: 0;
             }
 
             #getRoadList select{
