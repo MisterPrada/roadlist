@@ -107,7 +107,7 @@ class MainController extends Controller
             $activeSheet_register->setCellValue('I' . $i, implode(",\r\n", $address_tmp->all())); // Выставляем адрес
         }
 
-
+        dd($register);
 
         // Выравнивание строк по высоте относительно контента (для адресов)
         foreach ($activeSheet_register->getRowDimensions() as $rd) {
