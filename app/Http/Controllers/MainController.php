@@ -145,7 +145,7 @@ class MainController extends Controller
                 $price = (float)$request->price;
             }
 
-            
+
 
             // выставляем значения на первом листе
             $activeSheet1->setCellValue('DQ53', $price); // Выставляем цену

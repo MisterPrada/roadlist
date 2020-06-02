@@ -54,7 +54,7 @@
                     <div>
                         <span>Ручной ввод цен: </span>
                         <div class="default_input_checkbox">
-                            <input name="manual_price" id="price" type="checkbox">
+                            <input name="manual_price" id="manual_price" type="checkbox">
                         </div>
                     </div>
                     <div>
