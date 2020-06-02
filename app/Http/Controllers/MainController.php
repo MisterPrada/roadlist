@@ -108,6 +108,7 @@ class MainController extends Controller
         }
 
 
+
         // Выравнивание строк по высоте относительно контента (для адресов)
         foreach ($activeSheet_register->getRowDimensions() as $rd) {
             $rd->setRowHeight(-1);
@@ -135,6 +136,8 @@ class MainController extends Controller
 
         $tax_saving = []; // Хранение километража для машины
 
+        $price = 0;
+
         foreach ($register as $key => $item) {
             $taxation = $taxation_collect->get( $item->tax_table ); // Получаем нужную правую таблицу изходя из заданного значения
             if($request->manual_price){
@@ -142,6 +145,7 @@ class MainController extends Controller
             }else{
                 $price = (float)$request->price;
             }
+
 
             // выставляем значения на первом листе
             $activeSheet1->setCellValue('DQ53', $price); // Выставляем цену
