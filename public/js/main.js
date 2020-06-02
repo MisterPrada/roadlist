@@ -23,6 +23,7 @@ $('#getRoadList').on('submit', function(e){
     /*formData.append('first_mileage', this.first_mileage.value);*/
     formData.append('price_type', this.price_type.value);
     formData.append('price', this.price.value);
+    formData.append('manual_price', this.manual_price.checked);
     formData.append('tax_user', this.tax_user.value);
     formData.append('exp_user', this.exp_user.value);
     formData.append('register', register);

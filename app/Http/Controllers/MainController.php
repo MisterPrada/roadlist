@@ -74,7 +74,6 @@ class MainController extends Controller
             $taxation_collect->put($table, $taxation); // Заносим n таблицу из правыз
         }
 
-
         // Заполним массив регистра
         for ($i = 11; $i < 10000; ++$i) {
 
@@ -138,9 +137,14 @@ class MainController extends Controller
 
         foreach ($register as $key => $item) {
             $taxation = $taxation_collect->get( $item->tax_table ); // Получаем нужную правую таблицу изходя из заданного значения
+            if($request->manual_price){
+                $price = $item->price;
+            }else{
+                $price = (float)$request->price;
+            }
 
             // выставляем значения на первом листе
-            $activeSheet1->setCellValue('DQ53', $request->price); // Выставляем цену
+            $activeSheet1->setCellValue('DQ53', $price); // Выставляем цену
             $activeSheet1->setCellValue('DP55', $request->tax_user); // Выставляем таксировщика
             $activeSheet1->setCellValue('FG55', $request->exp_user); // Выставляем начальника эксплуатации
             $activeSheet1->setCellValue('DP46', $item->n1 . ' ' . $item->n2); // Выставляем номер путевого листа
@@ -155,11 +159,11 @@ class MainController extends Controller
             $activeSheet1->setCellValue('FH46', $date->format('yy')); // Выставляем год
 
             if ($request->price_type == 'cr') {
-                $activeSheet1->setCellValue('FW54', $item->success * $request->price); // Формируем "Всего к оплате" через количество
+                $activeSheet1->setCellValue('FW54', $item->success * $price); // Формируем "Всего к оплате" через количество
             }
 
             if ($request->price_type == 'cube') {
-                $activeSheet1->setCellValue('FW54', $item->volume * $request->price); // Формируем "Всего к оплате" через кубы
+                $activeSheet1->setCellValue('FW54', $item->volume * $price); // Формируем "Всего к оплате" через кубы
             }
 
 
