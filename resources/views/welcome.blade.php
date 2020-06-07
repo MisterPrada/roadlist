@@ -15,7 +15,15 @@
     <body>
         <div class="flex-center position-ref full-height">
             <div class="top-right links">
+                    @auth
+                        <span>
+                            Приветствуем вас, {{ Auth::user()->name }}
+                        </span>
+                    @endauth
                     <a href="{{ Route('main') }}">Главная</a>
+                    @auth
+                        <a href="{{ Route('logout') }}">Выйти</a>
+                    @endauth
             </div>
 
             <div class="content">
@@ -24,6 +32,10 @@
                 </div>
 
                 <form id="getRoadList" enctype="multipart/form-data">
+                    <div>
+                        <span>Шаблон реестра:</span>
+                        <a download href="/files/register.xlsx">Скачать</a>
+                    </div>
                     <div>
                         <span>*Организация: </span>
                         <input class="default_input" name="organization" id="organization" type="text" placeholder="ООО ТестСтрой" required>

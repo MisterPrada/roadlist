@@ -13,10 +13,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', 'MainController@index')->name('main');
-Route::post('/get_road_list', 'MainController@getRoadList')->name('getRoadList');
+Route::get('/', 'MainController@index')
+    ->middleware('auth')->name('main');
+Route::post('/get_road_list', 'MainController@getRoadList')
+    ->middleware('auth')->name('getRoadList');
 
 
-Route::get('/prada', function(){
-    return 'by MisterPrada '. mt_rand(75, 150);
+Route::get('/prada', function () {
+    return 'by MisterPrada ' . mt_rand(75, 150);
 })->name('prada');
+
+
+Auth::routes(['register' => false]);
+Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
