@@ -87,7 +87,7 @@ class MainController extends Controller
             $price = (float)$activeSheet_register->getCell('N' . $i)->getCalculatedValue();
 
             $register[] = (object)[
-                'date' => Carbon::create($activeSheet_register->getCell('A' . $i)->getFormattedValue())->format('d.m.Y'),
+                'date' => Carbon::create($activeSheet_register->getCell('A' . $i)->getFormattedValue())->format('d.m.yy'),
                 'n1' => $activeSheet_register->getCell('B' . $i)->getCalculatedValue(),
                 'n2' => $activeSheet_register->getCell('C' . $i)->getCalculatedValue(),
                 'car_mark' => $activeSheet_register->getCell('D' . $i)->getFormattedValue(),
@@ -158,10 +158,9 @@ class MainController extends Controller
             $activeSheet1->setCellValue('FE52', $item->volume); // Выставляем объём
             // формируем дату
             $date = Carbon::create($item->date);
-
             $activeSheet1->setCellValue('EH46', $date->format('d')); // Выставляем день
             $activeSheet1->setCellValue('EM46', $month_rus[$date->month - 1]); // Выставляем месяц
-            $activeSheet1->setCellValue('FH46', $date->format('Y')); // Выставляем год
+            $activeSheet1->setCellValue('FH46', $date->format('yy')); // Выставляем год
 
             if ($request->price_type == 'cr') {
                 $activeSheet1->setCellValue('FW54', $item->success * $price); // Формируем "Всего к оплате" через количество
@@ -200,7 +199,6 @@ class MainController extends Controller
 
 
             $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet); // Создаём новый .xlsx документ но основе копии
-
             $file_name = $item->n1 . ' ' . $item->n2; // Формируем имя документа
             $writer->save($temp_dir . "/{$file_name}.xlsx"); // Сохраняем документ в определённую директорию
             $zip->addFile($temp_dir . "/{$file_name}.xlsx", "{$file_name}.xlsx"); // Добавляем этот же файл в директорию
