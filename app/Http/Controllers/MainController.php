@@ -160,7 +160,7 @@ class MainController extends Controller
             $date = Carbon::create($item->date);
             $activeSheet1->setCellValue('EH46', $date->format('d')); // Выставляем день
             $activeSheet1->setCellValue('EM46', $month_rus[$date->month - 1]); // Выставляем месяц
-            $activeSheet1->setCellValue('FH46', $date->format('yy')); // Выставляем год
+            $activeSheet1->setCellValue('FH46', $date->format('Y')); // Выставляем год
 
             if ($request->price_type == 'cr') {
                 $activeSheet1->setCellValue('FW54', $item->success * $price); // Формируем "Всего к оплате" через количество
