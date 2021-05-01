@@ -87,7 +87,7 @@ class MainController extends Controller
             $price = (float)$activeSheet_register->getCell('N' . $i)->getCalculatedValue();
 
             $register[] = (object)[
-                'date' => Carbon::create($activeSheet_register->getCell('A' . $i)->getFormattedValue())->format('d.m.yy'),
+                'date' => Carbon::create($activeSheet_register->getCell('A' . $i)->getFormattedValue())->format('d.m.Y'),
                 'n1' => $activeSheet_register->getCell('B' . $i)->getCalculatedValue(),
                 'n2' => $activeSheet_register->getCell('C' . $i)->getCalculatedValue(),
                 'car_mark' => $activeSheet_register->getCell('D' . $i)->getFormattedValue(),
